@@ -1,23 +1,12 @@
-from database.connection import get_connection
+class Categoria:
+    def __init__(self, nome, id=None):
+        self.id = id
+        self.nome = nome
 
-def criar_categoria(nome):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "INSERT INTO categorias (nome) VALUES (?)",
-        (nome,)
-    )
-
-    conn.commit()
-    conn.close()
-
-def listar_categorias():
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM categorias")
-    categorias = cursor.fetchall()
-
-    conn.close()
-    return categorias
+    def validar_nome(self):
+        if not self.nome or not self.nome.strip():
+            raise ValueError("O nome da categoria não pode estar vazio")
+        return True
+    
+    def __str__(self):
+        return self.nome
