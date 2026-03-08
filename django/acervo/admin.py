@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, Item
+from .models import Categoria, Item, SugestaoItem, ListaUsuario
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
@@ -16,3 +16,6 @@ class ItemAdmin(admin.ModelAdmin):
     @admin.display(description='Ano')
     def formatado_ano(self, obj):
         return obj.formatar_ano()
+    
+    admin.site.register(SugestaoItem)
+    admin.site.register(ListaUsuario)

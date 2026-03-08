@@ -1,11 +1,37 @@
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from .models import Item, Categoria, ListaUsuario
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.exceptions import ValidationError
-from .models import Item, Categoria
 
-def item_list(request):
-    itens = Item.objects.all()
-    return render(request, 'acervo/item_list.html', {'itens': itens})
+def home(request):
+    return render(request, 'acervo/home.html')
+
+def registrar(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Este nome de usuário já está em uso.")
+            return render(request, "registro.html")
+
+        User.objects.create_user(username=username, password=password)
+        messages.success(request, "Conta criada! Faça o login.")
+
+        return redirect("login")
+    
+    return render(request, "registro.html")
+
+def adicionar_lista(request, item_id):
+    item = Item.objects.get(id=item_id)
+
+    ListaUsuario.objects.create(
+        usuario=request.user,
+        item=item
+    )
+
+    return redirect("item_list")
 
 def item_create(request):
     if request.method == 'POST':
@@ -81,6 +107,11 @@ def item_delete(request, pk):
         return redirect('item_list')
     
     return render(request, 'acervo/item_confirm_delete.html', {'item': item})
+
+
+def item_list(request):
+    itens = Item.objects.all()
+    return render(request, 'acervo/item_list.html', {'itens': itens})
 
 def categoria_list(request):
     categorias = Categoria.objects.all()

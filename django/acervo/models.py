@@ -1,6 +1,13 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.contrib.auth.models import User
+
+class SugestaoItem(models.Model):
+    titulo = models.CharField(max_length=200)
+    autor = models.CharField(max_length=200)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    aprovado = models.BooleanField(default=False)
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
@@ -95,3 +102,7 @@ class Item(models.Model):
 
         badges_str = f" {' '.join(badges)}" if badges else "" 
         return f"{self.titulo} - {self.autor} ({ano_str}{badges_str})"
+    
+class ListaUsuario(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
