@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
-venv/
-django/db.sqlite3
+*.db
 *.sqlite3
+.env
 .DS_Store
+Thumbs.db
