@@ -120,3 +120,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "acervo" / "static",
 ]
+
+LOGIN_REDIRECT_URL = 'item_list'
+LOGOUT_REDIRECT_URL = 'home'

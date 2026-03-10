@@ -21,7 +21,7 @@ def registrar(request):
 
         return redirect("login")
     
-    return render(request, "registro.html")
+    return render(request, "registration/registro.html")
 
 def adicionar_lista(request, item_id):
     item = Item.objects.get(id=item_id)
