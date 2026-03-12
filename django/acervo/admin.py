@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, Item, SugestaoItem, ListaUsuario
+from .models import Categoria, Item, SugestaoItem, ListaUsuario, Favorito
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
@@ -19,3 +19,8 @@ class ItemAdmin(admin.ModelAdmin):
     
     admin.site.register(SugestaoItem)
     admin.site.register(ListaUsuario)
+
+@admin.register(Favorito)
+class FavoritoAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'item', 'data_adicionado')
+    list_filter = ('usuario', 'item')

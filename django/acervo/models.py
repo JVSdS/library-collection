@@ -106,3 +106,17 @@ class Item(models.Model):
 class ListaUsuario(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+
+class Favorito(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    nota_pessoal = models.TextField(blank=True, null=True)
+    data_adicionado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Favorito"
+        verbose_name_plural = "Favoritos"
+        unique_together = ('usuario', 'item')
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.item.titulo}"

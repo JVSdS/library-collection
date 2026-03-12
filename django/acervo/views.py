@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
-from .models import Item, Categoria, ListaUsuario
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from .models import Item, Categoria, ListaUsuario, Favorito
+from django.contrib import messages
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect('item_list')
     return render(request, 'acervo/home.html')
 
 def registrar(request):
@@ -116,3 +118,44 @@ def item_list(request):
 def categoria_list(request):
     categorias = Categoria.objects.all()
     return render(request, 'acervo/categoria_list.html', {'categorias': categorias})
+
+@login_required
+def meus_favoritos(request):
+    favoritos = Favorito.objects.filter(usuario=request.user)
+    print(f"DEBUG: Usuário {request.user} tem {favoritos.count()} favoritos.")
+    return render(request, 'acervo/meus_favoritos.html', {'favoritos': favoritos})
+
+@login_required
+def adicionar_favorito(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    Favorito.objects.get_or_create(usuario=request.user, item=item)
+    return redirect('perfil')
+
+@login_required
+def perfil_usuario(request):
+    favoritos = Favorito.objects.filter(usuario=request.user).select_related('item')
+
+    total_favoritos = favoritos.count()
+
+    contexto = {
+        'favoritos': favoritos,
+        'total_favoritos': total_favoritos,
+
+    }
+    return render(request, 'acervo/perfil.html', contexto)
+
+@login_required
+def remover_favorito(request, favorito_id):
+    favorito = get_object_or_404(Favorito, id=favorito_id, usuario=request.user)
+    favorito.delete()
+
+    return redirect('perfil')
+
+@login_required
+def atualizar_nota(request, favorito_id):
+    if request.method == 'POST':
+        favorito = get_object_or_404(Favorito, id=favorito_id, usuario=request.user)
+        nova_nota = request.POST.get('nota')
+        favorito.nota_pessoal = nova_nota
+        favorito.save()
+    return redirect('perfil')

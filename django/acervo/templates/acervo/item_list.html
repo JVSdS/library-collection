@@ -1,19 +1,19 @@
-<!-- acervo/templates/acervo/item_list.html -->
-
 {% extends 'acervo/base.html' %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>📖 Acervo de Itens</h2>
-    <a href="{% url 'item_create' %}" class="btn btn-primary">➕ Adicionar Item</a>
+    {% if user.is_staff %}
+        <a href="{% url 'item_create' %}" class="btn btn-primary">➕ Adicionar Item</a>
+    {% endif %}
 </div>
 
 <div class="row">
     {% for item in itens %}
     <div class="col-md-6 col-lg-4 mb-3">
-        <div class="card h-100">
+        <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">{{ item.titulo }}</h5>
+                <h5 class="card-title fw-bold">{{ item.titulo }}</h5>
                 <p class="card-text mb-2">
                     <strong>Autor:</strong> {{ item.autor }}
                     {% if item.eh_anonimo %}
@@ -35,16 +35,29 @@
                     <strong>Categoria:</strong> {{ item.categoria|default:"Sem categoria" }}
                 </p>
             </div>
-            <div class="card-footer">
-                <a href="{% url 'item_update' item.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                <a href="{% url 'item_delete' item.pk %}" class="btn btn-sm btn-danger">🗑️ Deletar</a>
-            </div>
+
+                <div class="card-footer bg-white border-top-0">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'adicionar_favorito' item.pk %}" class="btn btn-sm btn-outline-primary w-100 mb-2">⭐ Salvar nos Favoritos</a>
+                        
+                        {% if user.is_staff %}
+                            <div class="d-flex gap-2 border-top pt-2">
+                                <a href="{% url 'item_update' item.pk %}" class="btn btn-sm btn-warning flex-fill">✏️ Editar</a>
+                                <a href="{% url 'item_delete' item.pk %}" class="btn btn-sm btn-danger flex-fill">🗑️ Deletar</a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-sm btn-primary w-100">
+                            ⭐ Salvar nos Favoritos
+                        </a>
+                    {% endif %}
+                </div>
         </div>
     </div>
     {% empty %}
-    <div class="col-12">
+    <div class="col-12 text-center py-5">
         <div class="alert alert-info">
-            📭 Nenhum item cadastrado. <a href="{% url 'item_create' %}">Adicione o primeiro!</a>
+            📭 Nenhum item cadastrado no momento.
         </div>
     </div>
     {% endfor %}
