@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Item, Categoria, ListaUsuario, Favorito
+from .models import Item, Categoria, ListaUsuario, Favorito, Perfil
 from django.contrib import messages
 
 def home(request):
@@ -134,13 +134,22 @@ def adicionar_favorito(request, item_id):
 @login_required
 def perfil_usuario(request):
     favoritos = Favorito.objects.filter(usuario=request.user).select_related('item')
-
     total_favoritos = favoritos.count()
+
+    from .models import Perfil
+    perfil_usuario, created = Perfil.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        if 'foto_perfil' in request.FILES:
+            perfil_usuario.foto = request.FILES['foto_perfil']
+            perfil_usuario.save()
+            messages.success(request, 'Sua foto de perfil foi atualizada!')
+            return redirect('perfil')
 
     contexto = {
         'favoritos': favoritos,
         'total_favoritos': total_favoritos,
-
+        'perfil': perfil_usuario,
     }
     return render(request, 'acervo/perfil.html', contexto)
 
@@ -158,4 +167,6 @@ def atualizar_nota(request, favorito_id):
         nova_nota = request.POST.get('nota')
         favorito.nota_pessoal = nova_nota
         favorito.save()
+        messages.success(request, 'Sua nota foi atualizada com sucesso!')
+        
     return redirect('perfil')

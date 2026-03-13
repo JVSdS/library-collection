@@ -1,6 +1,8 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'), 
@@ -15,6 +17,10 @@ urlpatterns = [
     path('meus-favoritos/', views.meus_favoritos, name='meus_favoritos'),
     path('favoritar/<int:item_id>/', views.adicionar_favorito, name='adicionar_favorito'),
     path('perfil/', views.perfil_usuario, name='perfil'),
+    path('perfil/nota/<int:favorito_id>/', views.atualizar_nota, name='atualizar_nota'),
     path('remover-favorito/<int:favorito_id>/', views.remover_favorito, name='remover_favorito'),
     path('atualizar-nota/<int:favorito_id>/', views.atualizar_nota, name='atualizar_nota'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

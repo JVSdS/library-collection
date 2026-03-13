@@ -103,6 +103,14 @@ class Item(models.Model):
         badges_str = f" {' '.join(badges)}" if badges else "" 
         return f"{self.titulo} - {self.autor} ({ano_str}{badges_str})"
     
+    imagem = models.ImageField(upload_to='itens/', null=True, blank=True)
+
+    @property
+    def imagem_url(self):
+        if self.imagem and hasattr(self.imagem, 'url'):
+            return self.imagem.url
+        return '/static/imagens/placeholder_item.png'
+    
 class ListaUsuario(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -120,3 +128,10 @@ class Favorito(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} - {self.item.titulo}"
+    
+class Perfil(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    foto = models.ImageField(upload_to='perfis', default='perfis/default.png')
+
+    def __str__(self):
+        return f'Perfil de {self.user.username}'
