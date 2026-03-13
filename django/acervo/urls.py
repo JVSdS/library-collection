@@ -12,7 +12,6 @@ urlpatterns = [
     path('item/novo/', views.item_create, name='item_create'),
     path('item/<int:pk>/editar/', views.item_update, name='item_update'),
     path('item/<int:pk>/deletar/', views.item_delete, name='item_delete'),
-    path('categorias/', views.categoria_list, name='categoria_list'),
     path('registro/', views.registrar, name='registro'),
     path('meus-favoritos/', views.meus_favoritos, name='meus_favoritos'),
     path('favoritar/<int:item_id>/', views.adicionar_favorito, name='adicionar_favorito'),
@@ -20,6 +19,7 @@ urlpatterns = [
     path('perfil/nota/<int:favorito_id>/', views.atualizar_nota, name='atualizar_nota'),
     path('remover-favorito/<int:favorito_id>/', views.remover_favorito, name='remover_favorito'),
     path('atualizar-nota/<int:favorito_id>/', views.atualizar_nota, name='atualizar_nota'),
+    path('categorias/', views.lista_categorias, name='lista_categorias'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

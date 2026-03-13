@@ -1,40 +1,46 @@
-<!-- acervo/templates/acervo/item_form.html -->
-
 {% extends 'acervo/base.html' %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>{% if item %}✏️ Editar{% else %}➕ Adicionar{% endif %} Item</h4>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">{% if item %}✏️ Editar{% else %}➕ Adicionar{% endif %} Item</h4>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     <div class="mb-3">
-                        <label class="form-label">Título *</label>
+                        <label class="form-label fw-bold">Título *</label>
                         <input type="text" name="titulo" class="form-control" 
                                value="{{ item.titulo|default:'' }}" required>
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Autor</label>
+                        <label class="form-label fw-bold">Autor</label>
                         <input type="text" name="autor" class="form-control" 
                                value="{{ item.autor|default:'' }}" 
                                placeholder="Deixe vazio para 'Anônimo'">
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Ano *</label>
+                        <label class="form-label fw-bold">Ano *</label>
                         <input type="number" name="ano" class="form-control" 
                                value="{{ item.ano|default:'' }}" required>
                         <small class="text-muted">Use anos negativos para a.C. (ex: -800)</small>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Capa/Imagem</label>
+                        <input type="file" name="imagem" class="form-control" accept="image/*">
+                        {% if item.imagem %}
+                            <small class="text-success">Imagem atual: {{ item.imagem.name }}</small>
+                        {% endif %}
+                    </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Tipo *</label>
+                        <label class="form-label fw-bold">Tipo *</label>
                         <select name="tipo" class="form-select" required>
                             <option value="">Selecione...</option>
                             <option value="livro" {% if item.tipo == 'livro' %}selected{% endif %}>Livro</option>
@@ -46,21 +52,20 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Categoria</label>
-                        <select name="categoria" class="form-select">
-                            <option value="">Sem categoria</option>
+                        <label class="form-label fw-bold">Categorias (Segure Ctrl para selecionar várias)</label>
+                         <select name="categorias" class="form-control" multiple>
                             {% for cat in categorias %}
-                                <option value="{{ cat.id }}" 
-                                        {% if item.categoria_id == cat.id %}selected{% endif %}>
+                                <option value="{{ cat.id }}" {% if cat in item.categorias.all %}selected{% endif %}>
                                     {{ cat.nome }}
                                 </option>
                             {% endfor %}
                         </select>
+                        <small class="text-muted">Segure Ctrl para selecionar mais de uma.</small>
                     </div>
                     
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">💾 Salvar</button>
-                        <a href="{% url 'item_list' %}" class="btn btn-secondary">❌ Cancelar</a>
+                        <button type="submit" class="btn btn-primary" style="background-color: #A37036; border: none;">💾 Salvar</button>
+                        <a href="{% url 'item_list' %}" class="btn btn-outline-secondary">❌ Cancelar</a>
                     </div>
                 </form>
             </div>

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Item, Categoria, ListaUsuario, Favorito, Perfil
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 
 def home(request):
@@ -76,25 +77,34 @@ def item_update(request, pk):
     if request.method == 'POST':
         try:
             item.titulo = request.POST.get('titulo')
-            item.autor = request.POST.get('autor') or ('Anônimo')
-
+            item.autor = request.POST.get('autor') or 'Anônimo'
+            
             ano = request.POST.get('ano')
             if not ano:
                 raise ValidationError("Ano é obrigatório")
             item.ano = int(ano)
-
             item.tipo = request.POST.get('tipo')
-            categoria_id = request.POST.get('categoria')
-            item.categoria_id = categoria_id if categoria_id else None
+
+            if 'imagem' in request.FILES:
+                item.imagem = request.FILES['imagem']
+
+            categoria_ids = request.POST.getlist('categorias')
 
             item.full_clean()
             item.save()
+
+            if hasattr(item, 'categorias'):
+                item.categorias.set(categoria_ids)
+            elif hasattr(item, 'categoria'):
+                item.categoria.set(categoria_ids)
 
             messages.success(request, f'Item "{item.titulo}" atualizado!')
             return redirect('item_list')
         
         except ValidationError as e:
-            messages.error(request, f"Erro: {e.messages}")
+            messages.error(request, f"Erro de validação: {e}")
+        except Exception as e:
+            messages.error(request, f"Erro inesperado: {e}")
 
     categorias = Categoria.objects.all()
     return render(request, 'acervo/item_form.html', {'item': item, 'categorias': categorias})
@@ -110,10 +120,30 @@ def item_delete(request, pk):
     
     return render(request, 'acervo/item_confirm_delete.html', {'item': item})
 
+from django.shortcuts import render, get_object_or_404
+from .models import Item, Categoria, Favorito
 
 def item_list(request):
-    itens = Item.objects.all()
-    return render(request, 'acervo/item_list.html', {'itens': itens})
+    categoria_id = request.GET.get('categoria')
+    
+    if categoria_id:
+        itens = Item.objects.filter(categoria__id=categoria_id)
+        categoria_filtrada = get_object_or_404(Categoria, id=categoria_id)
+    else:
+        itens = Item.objects.all()
+        categoria_filtrada = None
+
+    favoritos_ids = []
+    if request.user.is_authenticated:
+        favoritos_ids = Favorito.objects.filter(usuario=request.user).values_list('item_id', flat=True)
+    
+    contexto = {
+        'itens': itens,
+        'categoria_filtrada': categoria_filtrada,
+        'favoritos_ids': favoritos_ids,
+    }
+
+    return render(request, 'acervo/item_list.html', contexto)
 
 def categoria_list(request):
     categorias = Categoria.objects.all()
@@ -170,3 +200,10 @@ def atualizar_nota(request, favorito_id):
         messages.success(request, 'Sua nota foi atualizada com sucesso!')
         
     return redirect('perfil')
+
+def lista_categorias(request):
+    categorias = Categoria.objects.all()
+    contexto = {
+        'categorias': categorias,
+    }
+    return render(request, 'acervo/categorias.html', contexto)

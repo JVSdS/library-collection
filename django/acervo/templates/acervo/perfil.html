@@ -1,65 +1,124 @@
 {% extends 'acervo/base.html' %}
 
 {% block content %}
+<style>
+    .capa-item-perfil {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 5px 5px 0 0;
+        transition: transform 0.3s ease;
+    }
+    .card-item-perfil:hover .capa-item-perfil {
+        transform: scale(1.05);
+    }
+    .card-item-perfil {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    .card-item-perfil:hover {
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2) !important;
+    }
+</style>
+
 <div class="row">
     <div class="col-md-4 mb-4">
         <div class="card border-0 shadow-sm text-center p-4">
             <div class="mb-3">
-                {% if user.perfil.foto %}
+                {% if user.perfil.foto and "default.png" not in user.perfil.foto.url %}
                     <img src="{{ user.perfil.foto.url }}" class="rounded-circle img-thumbnail shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">
                 {% else %}
-                    <div class="rounded-circle bg-secondary d-inline-block shadow-sm" style="width: 120px; height: 120px; line-height: 120px; color: white;">
-                        S/F
+                    <div class="rounded-circle bg-white d-inline-flex align-items-center justify-content-center shadow-sm border" style="width: 120px; height: 120px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#A37036" class="bi bi-person-fill" viewBox="0 0 16 16">
+                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        </svg>
                     </div>
                 {% endif %}
                 <h3 class="fw-bold mt-2">{{ user.username }}</h3>
             </div>
             <hr>
-            <div class="text-start">
-                <p><strong>📅 Membro desde:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
-                <p><strong>🌟 Favoritos:</strong> {{ total_favoritos }} itens</p>
-                <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label class="form-label">Alterar foto de perfil:</label>
-    <input type="file" name="foto_perfil" class="form-control mb-2">
-    <button type="submit" class="btn btn-sm btn-primary">Atualizar Foto</button>
-</form>
+            <div class="text-start mb-3">
+                <p class="mb-1"><strong>📅 Membro desde:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
+                <p class="mb-1"><strong>🌟 Favoritos:</strong> {{ total_favoritos }} itens</p>
             </div>
-            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm mt-3">Sair da Conta</a>
+            
+            <form method="POST" enctype="multipart/form-data" class="text-start border p-2 rounded bg-light mb-3">
+                {% csrf_token %}
+                <label class="small fw-bold mb-1">Alterar foto:</label>
+                <input type="file" name="foto_perfil" class="form-control form-control-sm mb-2">
+                <button type="submit" class="btn btn-sm text-white w-100" style="background-color: #A37036;">Atualizar</button>
+            </form>
+            
+            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Sair da Conta</a>
         </div>
     </div>
 
     <div class="col-md-8">
         <div class="card border-0 shadow-sm p-4">
-            <h4 class="mb-4 texto-acervo">Minha Biblioteca Pessoal</h4>
+            <h4 class="mb-4 texto-acervo">📚 Minha Estante</h4>
             
-            <div class="row">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
                 {% for fav in favoritos %}
-                <div class="col-lg-6 mb-3">
-                    <div class="card h-100 border">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-1">{{ fav.item.titulo }}</h6>
-                            <p class="small text-muted mb-2">Por: {{ fav.item.autor }}</p>
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm card-item-perfil" 
+                         style="cursor: pointer;" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#modalAnotacao{{ fav.id }}">
+                        
+                        <img src="{{ fav.item.imagem_url }}" class="capa-item-perfil" alt="{{ fav.item.titulo }}">
+                        <div class="card-body p-2 text-center">
+                            <h6 class="fw-bold mb-0 text-truncate">{{ fav.item.titulo }}</h6>
+                            {% if fav.nota_pessoal %}
+                                <span class="badge bg-success mt-1" style="font-size: 0.6rem;">📜 Ver Notas</span>
+                            {% else %}
+                                <span class="badge bg-secondary mt-1" style="font-size: 0.6rem;">📝 Anotar</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="modalAnotacao{{ fav.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="background-color: #fdf5e6; border: 2px solid #A37036;">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title fw-bold texto-acervo">📝 Notas: {{ fav.item.titulo }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
                             <form method="POST" action="{% url 'atualizar_nota' fav.id %}">
                                 {% csrf_token %}
-                                <label class="small fw-bold">Sua nota pessoal:</label>
-                                <textarea name="nota" class="form-control form-control-sm mb-2" rows="2" placeholder="Digite sua nota...">{{ fav.nota_pessoal|default:"" }}</textarea>
-                                <button type="submit" class="btn btn-sm btn-success w-100 py-0" style="font-size: 0.7rem;">Salvar Nota</button>
+                                <div class="modal-body">
+                                    <p class="small text-muted mb-2">Anotação de: <strong>{{ user.username }}</strong></p>
+                                    <textarea name="nota" class="form-control" rows="8" 
+                                              style="background: transparent; border: 1px dashed #A37036; font-family: 'Courier New', Courier, monospace;"
+                                              placeholder="Escreva aqui suas anotações...">{{ fav.nota_pessoal|default:"" }}</textarea>
+                                </div>
+                                <div class="modal-footer border-0">
+                                    <div class="modal-footer border-0 d-flex justify-content-between">
+                                        <a href="{% url 'remover_favorito' fav.id %}" 
+                                        class="btn btn-sm btn-link text-danger text-decoration-none" 
+                                        onclick="return confirm('Tem certeza que deseja remover este item da sua biblioteca?')">
+                                            🗑️ Remover da Estante
+                                        </a>
+
+                                        <div>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            <button type="submit" class="btn btn-sm text-white" style="background-color: #A37036;">Guardar Notas</button>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
                             </form>
-                        </div>
-                        <div class="card-footer bg-white border-0 text-end">
-                            <a href="{% url 'remover_favorito' fav.id %}" class="btn btn-sm text-danger">Excluir</a>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="text-center py-4">
-                    <p class="text-muted">Você ainda não salvou nenhum item.</p>
-                    <a href="{% url 'item_list' %}" class="btn btn-sm btn-primary">Explorar Acervo</a>
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Sua estante está vazia.</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

@@ -72,7 +72,7 @@
 
             <div class="collapse navbar-collapse" id="navbarNav"> <div class="navbar-nav ms-auto align-items-center">
                     <a class="nav-link {% if request.resolver_match.url_name == 'item_list' %}active fw-bold{% endif %}" href="{% url 'item_list' %}">Itens</a>
-                    <a class="nav-link {% if request.resolver_match.url_name == 'categoria_list' %}active fw-bold{% endif %}" href="{% url 'categoria_list' %}">Categorias</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'lista_categorias' %}active fw-bold{% endif %}" href="{% url 'lista_categorias' %}">Categorias</a>
                     <a class="nav-link me-3" href="/admin">Admin</a>
 
                     {% if user.is_authenticated %}
@@ -81,14 +81,16 @@
                             <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="me-2">👋 Olá, {{ user.username }}!</span>
                                 
-                                {% if user.perfil.foto %}
+                                {% if user.perfil.foto and "default.png" not in user.perfil.foto.url %}
                                     <img src="{{ user.perfil.foto.url }}" 
-                                        class="rounded-circle border border-2 border-light" 
+                                        class="rounded-circle border border-2 border-light shadow-sm" 
                                         style="width: 40px; height: 40px; object-fit: cover;">
                                 {% else %}
-                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-dark" 
-                                        style="width: 40px; height: 40px; font-weight: bold; font-size: 0.9rem;">
-                                        {{ user.username|slice:":1"|upper }}
+                                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center border border-2 border-light shadow-sm" 
+                                        style="width: 40px; height: 40px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#A37036" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                                        </svg>
                                     </div>
                                 {% endif %}
                             </a>

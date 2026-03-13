@@ -19,6 +19,8 @@ class Categoria(models.Model):
         if not self.nome or not self.nome.strip():
             raise ValidationError("O nome da categoria não pode estar vazio")
         
+    imagem = models.ImageField(upload_to='categorias/', blank=True, null=True)
+        
     def __str__(self):
         return self.nome
     
@@ -35,10 +37,8 @@ class Item(models.Model):
     titulo = models.CharField(max_length=200)
     autor = models.CharField(max_length=200, blank=True, default='Anônimo')
     ano = models.IntegerField()
-    categoria = models.ForeignKey(
+    categoria = models.ManyToManyField(
         Categoria,
-        on_delete=models.SET_NULL,
-        null=True,
         blank=True,
         related_name='itens'
     )
