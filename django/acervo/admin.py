@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from .models import Categoria, Item, ListaUsuario, Favorito, TipoItem
+from .models import Categoria, Item, Favorito, TipoItem
 
 class ItemAdminForm(forms.ModelForm):
     tipo_selecao = forms.ModelChoiceField(
@@ -55,5 +55,3 @@ class ItemAdmin(admin.ModelAdmin):
 class FavoritoAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'item', 'data_adicionado')
     list_filter = ('usuario', 'item')
-
-admin.site.register(ListaUsuario)

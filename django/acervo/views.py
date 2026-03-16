@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Item, Categoria, ListaUsuario, Favorito, Perfil, TipoItem
+from .models import Item, Categoria, Favorito, TipoItem
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db.models import Q
@@ -28,16 +28,6 @@ def registrar(request):
     
     return render(request, "registration/registro.html")
 
-def adicionar_lista(request, item_id):
-    item = Item.objects.get(id=item_id)
-
-    ListaUsuario.objects.create(
-        usuario=request.user,
-        item=item
-    )
-
-    return redirect("item_list")
-
 def item_create(request):
     if request.method == 'POST':
         try:
@@ -46,6 +36,7 @@ def item_create(request):
             ano = request.POST.get('ano')
             tipo = request.POST.get('tipo')
             categoria_ids = request.POST.getlist('categorias')
+            tipo_id = request.POST.get('tipo')
 
             if not ano:
                 raise ValidationError("Ano é obrigatório")
@@ -54,8 +45,9 @@ def item_create(request):
                 titulo=titulo,
                 autor=autor,
                 ano=int(ano),
-                tipo=tipo
             )
+            if tipo_id:
+                item.tipo = TipoItem.objects.get(id=tipo_id)
             
             if 'imagem' in request.FILES:
                 item.imagem = request.FILES['imagem']
@@ -92,7 +84,12 @@ def item_update(request, pk):
             if not ano:
                 raise ValidationError("Ano é obrigatório")
             item.ano = int(ano)
-            item.tipo = request.POST.get('tipo')
+
+            tipo_id = request.POST.get('tipo')
+            if tipo_id:
+                item.tipo = get_object_or_404(TipoItem, id=tipo_id)
+            else:
+                item.tipo = None
 
             if 'imagem' in request.FILES:
                 item.imagem = request.FILES['imagem']
@@ -102,10 +99,7 @@ def item_update(request, pk):
             item.full_clean()
             item.save()
 
-            if hasattr(item, 'categorias'):
-                item.categorias.set(categoria_ids)
-            elif hasattr(item, 'categoria'):
-                item.categoria.set(categoria_ids)
+            item.categoria.set(categoria_ids)
 
             messages.success(request, f'Item "{item.titulo}" atualizado!')
             return redirect('item_list')
@@ -135,29 +129,24 @@ def item_delete(request, pk):
     
     return render(request, 'acervo/item_confirm_delete.html', {'item': item})
 
-from django.shortcuts import render, get_object_or_404
-from .models import Item, Categoria, Favorito
-
 def item_list(request):
     query = request.GET.get('q')
     categoria_id = request.GET.get('categoria')
-    itens_queryset = Item.objects.all()
+    
+    itens = Item.objects.all().select_related('tipo').prefetch_related('categoria')
 
-    lista_itens = list(itens_queryset)
-    itens_aleatorios = random.sample(lista_itens, min (len(lista_itens), 2))
-
-    itens = Item.objects.all()
+    lista_itens = list(itens)
+    itens_aleatorios = random.sample(lista_itens, min(len(lista_itens), 2))
 
     if query:
         itens = itens.filter(
             Q(titulo__icontains=query) | Q(autor__icontains=query)
         )
     
+    categoria_filtrada = None
     if categoria_id:
-        itens = Item.objects.filter(categoria__id=categoria_id)
+        itens = itens.filter(categoria__id=categoria_id)
         categoria_filtrada = get_object_or_404(Categoria, id=categoria_id)
-    else:
-        categoria_filtrada = None
 
     favoritos_ids = []
     if request.user.is_authenticated:
@@ -180,7 +169,6 @@ def categoria_list(request):
 @login_required
 def meus_favoritos(request):
     favoritos = Favorito.objects.filter(usuario=request.user)
-    print(f"DEBUG: Usuário {request.user} tem {favoritos.count()} favoritos.")
     return render(request, 'acervo/meus_favoritos.html', {'favoritos': favoritos})
 
 @login_required

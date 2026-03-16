@@ -3,12 +3,6 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-class SugestaoItem(models.Model):
-    titulo = models.CharField(max_length=200)
-    autor = models.CharField(max_length=200)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    aprovado = models.BooleanField(default=False)
-
 class TipoItem(models.Model):
     nome = models.CharField(max_length=50, unique=True)
     def __str__(self):
@@ -34,7 +28,7 @@ class Item(models.Model):
     autor = models.CharField(max_length=200, blank=True, default='Anônimo')
     ano = models.IntegerField()
     categoria = models.ManyToManyField(Categoria, blank=True, related_name='itens')
-    tipo = models.CharField(max_length=100, null=True, blank=True)
+    tipo = models.ForeignKey(TipoItem, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Tipo do Item")
     imagem = models.ImageField(upload_to='itens/', null=True, blank=True) # Movi para cima das properties
     criado_em = models.DateTimeField(auto_now_add=True)
 
@@ -71,10 +65,6 @@ class Item(models.Model):
     def __str__(self):
         ano_str = self.formatar_ano()
         return f"{self.titulo} - {self.autor} ({ano_str})"
-    
-class ListaUsuario(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 class Favorito(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
