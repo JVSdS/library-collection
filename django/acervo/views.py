@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Item, Categoria, ListaUsuario, Favorito, Perfil
+from .models import Item, Categoria, ListaUsuario, Favorito, Perfil, TipoItem
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.db.models import Q
+import random
 
 def home(request):
     if request.user.is_authenticated:
@@ -40,36 +42,43 @@ def item_create(request):
     if request.method == 'POST':
         try:
             titulo = request.POST.get('titulo')
-            autor = request.POST.get('autor') or ('Anônimo')
+            autor = request.POST.get('autor') or 'Anônimo'
             ano = request.POST.get('ano')
             tipo = request.POST.get('tipo')
-            categoria_id = request.POST.get('categoria')
+            categoria_ids = request.POST.getlist('categorias')
 
             if not ano:
                 raise ValidationError("Ano é obrigatório")
             
-            ano = int(ano)
-
             item = Item(
                 titulo=titulo,
                 autor=autor,
-                ano=ano,
-                tipo=tipo,
-                categoria_id=categoria_id if categoria_id else None
+                ano=int(ano),
+                tipo=tipo
             )
+            
+            if 'imagem' in request.FILES:
+                item.imagem = request.FILES['imagem']
+
             item.full_clean()
             item.save()
+
+            if categoria_ids:
+                item.categoria.set(categoria_ids)
 
             messages.success(request, f'Item "{item.titulo}" adicionado com sucesso!')
             return redirect('item_list')
         
         except ValidationError as e:
-            messages.error(request, f"Erro: {e.message}")
+            messages.error(request, f"Erro: {e}")
         except Exception as e:
             messages.error(request, f"Erro ao cadastrar: {str(e)}")
 
-    categorias = Categoria.objects.all()
-    return render(request, 'acervo/item_form.html', {'categorias': categorias})
+    contexto = {
+        'categorias': Categoria.objects.all(),
+        'tipos_disponiveis': TipoItem.objects.all(),
+    }
+    return render(request, 'acervo/item_form.html', contexto)
 
 def item_update(request, pk):
     item = get_object_or_404(Item, pk=pk)
@@ -107,7 +116,13 @@ def item_update(request, pk):
             messages.error(request, f"Erro inesperado: {e}")
 
     categorias = Categoria.objects.all()
-    return render(request, 'acervo/item_form.html', {'item': item, 'categorias': categorias})
+
+    contexto = {
+        'item': item,
+        'categorias': Categoria.objects.all(),
+        'tipos_disponiveis': TipoItem.objects.all(),
+    }
+    return render(request, 'acervo/item_form.html', contexto)
 
 def item_delete(request, pk):
     item = get_object_or_404(Item, pk=pk)
@@ -124,13 +139,24 @@ from django.shortcuts import render, get_object_or_404
 from .models import Item, Categoria, Favorito
 
 def item_list(request):
+    query = request.GET.get('q')
     categoria_id = request.GET.get('categoria')
+    itens_queryset = Item.objects.all()
+
+    lista_itens = list(itens_queryset)
+    itens_aleatorios = random.sample(lista_itens, min (len(lista_itens), 2))
+
+    itens = Item.objects.all()
+
+    if query:
+        itens = itens.filter(
+            Q(titulo__icontains=query) | Q(autor__icontains=query)
+        )
     
     if categoria_id:
         itens = Item.objects.filter(categoria__id=categoria_id)
         categoria_filtrada = get_object_or_404(Categoria, id=categoria_id)
     else:
-        itens = Item.objects.all()
         categoria_filtrada = None
 
     favoritos_ids = []
@@ -141,6 +167,8 @@ def item_list(request):
         'itens': itens,
         'categoria_filtrada': categoria_filtrada,
         'favoritos_ids': favoritos_ids,
+        'query': query,
+        'itens_cabecalho': itens_aleatorios,
     }
 
     return render(request, 'acervo/item_list.html', contexto)

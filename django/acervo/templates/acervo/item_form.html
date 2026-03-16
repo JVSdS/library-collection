@@ -43,24 +43,25 @@
                         <label class="form-label fw-bold">Tipo *</label>
                         <select name="tipo" class="form-select" required>
                             <option value="">Selecione...</option>
-                            <option value="livro" {% if item.tipo == 'livro' %}selected{% endif %}>Livro</option>
-                            <option value="revista" {% if item.tipo == 'revista' %}selected{% endif %}>Revista</option>
-                            <option value="manuscrito" {% if item.tipo == 'manuscrito' %}selected{% endif %}>Manuscrito</option>
-                            <option value="artigo" {% if item.tipo == 'artigo' %}selected{% endif %}>Artigo</option>
-                            <option value="outro" {% if item.tipo == 'outro' %}selected{% endif %}>Outro</option>
+                            {% for t in tipos_disponiveis %}
+                                <option value="{{ t.nome }}" {% if item.tipo == t.nome %}selected{% endif %}>
+                                    {{ t.nome }}
+                                </option>
+                            {% endfor %}
                         </select>
+                        <small class="text-muted">Gerencie os tipos no Painel Admin.</small>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label fw-bold">Categorias (Segure Ctrl para selecionar várias)</label>
-                         <select name="categorias" class="form-control" multiple>
+                        <select name="categorias" class="form-control" multiple>
                             {% for cat in categorias %}
-                                <option value="{{ cat.id }}" {% if cat in item.categorias.all %}selected{% endif %}>
+                                <option value="{{ cat.id }}" 
+                                    {% if item and cat in item.categoria.all %}selected{% endif %}>
                                     {{ cat.nome }}
                                 </option>
                             {% endfor %}
                         </select>
-                        <small class="text-muted">Segure Ctrl para selecionar mais de uma.</small>
                     </div>
                     
                     <div class="d-grid gap-2">

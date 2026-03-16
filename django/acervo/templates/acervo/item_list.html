@@ -1,6 +1,5 @@
 {% extends 'acervo/base.html' %}
-
-{% block content %}
+{% load static %} {% block content %}
 <style>
     .book-card {
         overflow: hidden;
@@ -49,19 +48,35 @@
         height: 100%;
         background: #eee;
     }
-
     .overlay-content .badge {
-    margin-bottom: 2px;
-    font-size: 0.7rem;
-    white-space: normal;
-}
+        margin-bottom: 2px;
+        font-size: 0.7rem;
+        white-space: normal;
+    }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="texto-acervo">📖 Acervo de Itens</h2>
-    {% if user.is_staff %}
-        <a href="{% url 'item_create' %}" class="btn btn-primary" style="background-color: #A37036; border: none;">➕ Adicionar Item</a>
-    {% endif %}
+<div class="row mb-5 align-items-center" style="background-color: rgba(163, 112, 54, 0.05); border-radius: 15px; border: 1px dashed rgba(163, 112, 54, 0.2); padding: 20px 0;">
+    
+    <div class="col-md-3 d-none d-md-flex justify-content-end">
+        {% if itens_cabecalho.0 and itens_cabecalho.0.imagem %}
+            <img src="{{ itens_cabecalho.0.imagem.url }}" style="height: 180px; width: 130px; object-fit: cover; border-radius: 5px; transform: rotate(-10deg); box-shadow: 5px 5px 15px rgba(0,0,0,0.3); border: 3px solid white;">
+        {% endif %}
+    </div>
+
+    <div class="col-md-6 text-center">
+        <img src="{% static 'imagens/acervo_itens.png' %}" alt="Acervo de Itens" style="height: 200px; width: auto; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.1));">
+        {% if user.is_staff %}
+            <div class="mt-2">
+                <a href="{% url 'item_create' %}" class="btn btn-primary btn-sm" style="background-color: #A37036; border: none; font-weight: bold;">➕ Novo Item</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-3 d-none d-md-flex justify-content-start">
+        {% if itens_cabecalho.1 and itens_cabecalho.1.imagem %}
+            <img src="{{ itens_cabecalho.1.imagem.url }}" style="height: 180px; width: 130px; object-fit: cover; border-radius: 5px; transform: rotate(10deg); box-shadow: -5px 5px 15px rgba(0,0,0,0.3); border: 3px solid white;">
+        {% endif %}
+    </div>
 </div>
 
 {% if categoria_filtrada %}
@@ -87,7 +102,13 @@
                 <div class="book-overlay">
                     <div class="overlay-content text-white">
                         <h6 class="fw-bold mb-1">{{ item.titulo }}</h6>
+                        
+                        <span class="badge mb-2" style="background-color: rgba(255,255,255,0.2); border: 1px solid white;">
+                            {{ item.tipo|default:"Geral"|capfirst }}
+                        </span>
+
                         <p class="small mb-2">Por: {{ item.autor }}</p>
+                        
                         <p class="card-text mb-1 small">
                             <strong>Categorias:</strong><br>
                             {% for cat in item.categoria.all %}
@@ -99,13 +120,11 @@
                         
                         <div class="d-grid gap-2 mt-3">
                             {% if user.is_authenticated %}
-                                
                                 {% if item.id in favoritos_ids %}
                                     <button class="btn btn-sm btn-success disabled">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
-                                        </svg> 
-                                        Na Estante
+                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                                        </svg> Na Estante
                                     </button>
                                 {% else %}
                                     <a href="{% url 'adicionar_favorito' item.pk %}" class="btn btn-sm btn-light">📚 Adicionar à estante</a>
@@ -127,14 +146,14 @@
             
             <div class="card-body px-2 py-3 text-center">
                 <h6 class="fw-bold texto-acervo mb-0">{{ item.titulo }}</h6>
-                <small class="text-muted">{{ item.get_tipo_display }}</small>
+                <small class="text-muted">{{ item.formatar_ano }}</small>
             </div>
         </div>
     </div>
     {% empty %}
     <div class="col-12 text-center py-5">
         <div class="alert alert-info border-0 shadow-sm">
-            📭 Nenhum item encontrado nesta categoria.
+            📭 Nenhum item encontrado para sua busca.
         </div>
     </div>
     {% endfor %}

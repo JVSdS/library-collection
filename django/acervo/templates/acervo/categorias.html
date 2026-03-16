@@ -76,22 +76,72 @@
         color: white;
         font-size: 0.8rem;
     }
+
+    .linha-ornamental {
+    flex-grow: 1;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #A37036, transparent);
+    margin: 0 20px;
+    opacity: 0.4;
+}
+
+    .btn-gerenciar-indice {
+        border: 1px solid #A37036 !important;
+        color: #A37036 !important;
+        background: transparent !important;
+        border-radius: 20px !important;
+        font-size: 0.75rem !important;
+        font-weight: bold !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease !important;
+        opacity: 0.8;
+        text-transform: none;
+    }
+
+    .btn-gerenciar-indice:hover {
+        background-color: #A37036 !important;
+        color: #fff !important;
+        opacity: 1;
+        box-shadow: 0 0 12px rgba(163, 112, 54, 0.4);
+        transform: translateY(-1px);
+    }
 </style>
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="texto-acervo">🏷️ Gêneros e Categorias</h2>
-        {% if user.is_staff %}
-            <a href="/admin/acervo/categoria/" class="btn btn-sm btn-outline-secondary">➕ Gerenciar</a>
-        {% endif %}
+    <div class="row mb-5 align-items-center justify-content-center">
+        
+        <div class="col-md-3 d-none d-md-flex align-items-center justify-content-end">
+            <i class="bi bi-compass opacity-50" style="font-size: 2.5rem; color: #A37036;"></i>
+            <div class="linha-ornamental"></div>
+        </div>
+
+        <div class="col-md-4 text-center">
+            <img src="{% static 'imagens/categorias.png' %}" 
+                 alt="Gêneros e Categorias" 
+                 style="height: 180px; width: auto; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.2));">
+            
+                    {% if user.is_staff %}
+                        <div class="mt-2">
+                            <a href="/admin/acervo/categoria/" class="btn btn-sm btn-gerenciar-indice">
+                                ➕ Gerenciar Categorias
+                            </a>
+                        </div>
+                    {% endif %}
+                    </div>
+
+        <div class="col-md-3 d-none d-md-flex align-items-center justify-content-start">
+            <div class="linha-ornamental"></div>
+            <i class="bi bi-quill opacity-50" style="font-size: 2.5rem; color: #A37036;"></i>
+        </div>
     </div>
 
     <div class="row">
         {% for cat in categorias %}
         <div class="col-md-3 col-sm-6 mb-4">
-<div class="card card-categoria shadow-sm" 
-     style="background-image: {% if cat.imagem %}url('{{ cat.imagem.url }}'){% else %}none{% endif %}; 
-            background-color: {% if not cat.imagem %}#2a1e12{% else %}transparent{% endif %};">
+            <div class="card card-categoria shadow-sm" 
+                 style="background-image: {% if cat.imagem %}url('{{ cat.imagem.url }}'){% else %}none{% endif %}; 
+                        background-color: {% if not cat.imagem %}#2a1e12{% else %}transparent{% endif %};">
                 
                 <div class="categoria-info">
                     <h4 class="categoria-titulo mb-2">{{ cat.nome }}</h4>
@@ -109,9 +159,10 @@
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
-            <p class="text-muted">Nenhuma categoria encontrada.</p>
+            <p class="text-muted italic">Nenhum tomo categorizado foi encontrado nestes registros.</p>
         </div>
         {% endfor %}
     </div>
 </div>
+
 {% endblock %}

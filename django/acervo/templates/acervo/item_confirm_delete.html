@@ -1,0 +1,43 @@
+{% extends 'acervo/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header text-center py-4" style="background-color: #f8d7da; border-bottom: 2px solid #f5c2c7;">
+                    <h3 class="text-danger fw-bold mb-0">⚠️ Remover do Acervo?</h3>
+                </div>
+
+                <div class="card-body text-center p-5" style="background-color: #fffaf5;">
+                    <p class="fs-5">Você está prestes a excluir este item permanentemente do banco de dados:</p>
+                    
+                    <div class="my-4">
+                        {% if item.imagem %}
+                            <img src="{{ item.imagem.url }}" alt="{{ item.titulo }}" style="height: 180px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        {% endif %}
+                        <h4 class="mt-3 fw-bold" style="color: #A37036;">{{ item.titulo }}</h4>
+                        <p class="text-muted italic">Autor: {{ item.autor }}</p>
+                    </div>
+
+                    <hr style="border-top: 1px dashed #A37036; opacity: 0.3;">
+
+                    <p class="text-muted small mb-4">Esta ação não pode ser desfeita. O registro será apagado do acervo.</p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="{% url 'item_list' %}" class="btn btn-outline-secondary px-4">
+                                ❌ Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger px-4 fw-bold shadow-sm">
+                                🔥 Confirmar Exclusão
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
