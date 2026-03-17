@@ -1,0 +1,207 @@
+:root {
+    --primary: #A37036 !important;    
+    --secondary: #5c4033 !important;  
+    --accent: #8b5d2e !important;
+    --header-bg: #A37036 !important; 
+    --header-color: #ffffff !important;
+    --breadcrumbs-bg: #fbe4cc !important;
+}
+
+body {
+    background-color: #fbe4cc !important;
+}
+
+#header {
+    background: #A37036 !important;
+    color: #ffffff !important;
+    border-bottom: none !important;
+}
+
+#branding h1, #branding h1 a {
+    color: #ffffff !important;
+    font-family: 'DR-Exclusive', serif !important; 
+}
+
+div.breadcrumbs {
+    background: #ffffff !important; 
+    color: #A37036 !important;
+    border-bottom: 1px solid #A37036 !important;
+    padding: 10px 40px !important;
+}
+
+div.breadcrumbs a {
+    color: #A37036 !important;
+    font-weight: bold !important;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: #A37036 !important;
+    color: #ffffff !important;
+}
+
+.submit-row input, .button, .default {
+    background: #A37036 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    transition: background 0.3s !important;
+}
+
+.submit-row input:hover, .button:hover {
+    background: #8b5d2e !important;
+}
+
+a:link, a:visited {
+    color: #A37036 !important;
+}
+
+#content-main {
+    background-color: #ffffff !important;
+    padding: 20px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+}
+
+#user-tools {
+    color: #ffffff !important;
+}
+
+#user-tools a {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 2px 5px !important;
+    transition: all 0.2s ease !important;
+}
+
+#user-tools a:hover {
+    color: #fbe4cc !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px;
+}
+
+#user-tools strong {
+    color: #fbe4cc !important; 
+    font-weight: bold !important;
+    margin-right: 10px;
+}
+
+body.login #header {
+    background: transparent !important;
+    height: auto !important;      
+    min-height: 100px !important;    
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: visible !important;
+}
+
+body.login #branding h1 {
+    font-size: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+body.login #branding h1::after {
+    content: "Admin" !important;
+    display: block !important;
+    font-size: 3rem !important;  
+    font-family: 'DR-Exclusive', serif !important;
+    font-weight: 700 !important;
+    color: #A37036 !important;
+    visibility: visible !important;
+    line-height: 1.5 !important;      
+    padding-top: 10px !important;
+}
+
+body.login #content-main::before {
+    content: "Acesse o painel administrativo" !important;
+    display: block !important;
+    text-align: center !important;
+    color: #6c757d !important;
+    margin-bottom: 25px !important;
+    font-size: 0.95rem !important;
+}
+
+body.login .submit-row input {
+    width: 100% !important;
+    float: none !important;
+    padding: 12px !important;
+    font-size: 1.1rem !important;
+    border-radius: 8px !important;
+    background-color: #A37036 !important;
+    text-transform: capitalize !important; 
+}
+
+body.login .form-row input {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 6px !important;
+    padding: 10px !important;
+}
+
+body.login #content-main {
+    padding-top: 0 !important;    
+}
+
+.object-tools a.historylink {
+    background: #8b5d2e !important;
+    color: #ffffff !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    display: inline-block !important;
+}
+
+.object-tools a.historylink:hover {
+    background: #A37036 !important;
+}
+
+.submit-row a.deletelink {
+    background: #d9534f !important; 
+    color: #ffffff !important; 
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    display: block !important;
+    height: auto !important;
+    line-height: normal !important;
+    margin: 0 !important;
+}
+
+.submit-row a.deletelink:hover {
+    background: #c9302c !important;
+}
+
+.submit-row {
+    background: #ffffff !important;
+    border-top: 1px solid #dee2e6 !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 15px !important;
+    flex-wrap: wrap !important;
+}
+
+.submit-row input[type="submit"] {
+    margin: 0 !important;
+    height: auto !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+}
+
+.object-tools a.addlink {
+    background-color: #A37036 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-weight: bold !important;
+}
