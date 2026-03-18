@@ -19,11 +19,10 @@ def registrar(request):
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Este nome de usuário já está em uso.")
-            return render(request, "registro.html")
+            return render(request, "registration/registro.html")
 
         User.objects.create_user(username=username, password=password)
         messages.success(request, "Conta criada! Faça o login.")
-
         return redirect("login")
     
     return render(request, "registration/registro.html")

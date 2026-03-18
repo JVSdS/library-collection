@@ -57,6 +57,22 @@
             border-radius: 5px;
         }
 
+        .btn-entrar {
+            background-color: #ffffff;
+            color: #A37036 !important;
+            font-weight: bold;
+            border-radius: 50px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .btn-entrar:hover {
+            background-color: #fbe4cc;
+            color: #5c4033 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+        }
+
     </style>
 </head>
 <body>
@@ -123,7 +139,9 @@
                         </li>
                     </ul>
                     {% else %}
-                        <a class="nav-link text-white" href="{% url 'login' %}">Entrar</a>
+                        <li class="nav-item ms-lg-3">
+                            <a class="btn btn-entrar px-4 shadow-sm" href="{% url 'login' %}">Entrar</a>
+                        </li>
                     {% endif %}
                 </div>
             </div>
