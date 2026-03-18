@@ -1,5 +1,10 @@
 # 📚 Library Collection - Sistema de Acervo Bibliográfico
-### Projeto Completo: Versão Terminal + Versão Web (Django)
+<p align="center">
+Projeto Completo: Versão Terminal + Versão Web (Django)  
+</p>
+<p align="center">
+<img width="161" height="1619" alt="logo" src="https://github.com/user-attachments/assets/e937809f-b194-4470-8461-744a9a9d9a1b" />
+</p>
 
 ## 👨‍💻 Informações do Projeto
 - Desenvolvedor: João Victor Silva dos Santos
