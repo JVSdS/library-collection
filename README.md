@@ -184,3 +184,5 @@ Interface web com autenticação de usuários.
 <img width="1331" height="715" alt="Screenshot_357" src="https://github.com/user-attachments/assets/ef83accd-476b-4b89-b375-4a9fb28f58a8" />
 
 <img width="1337" height="716" alt="Screenshot_358" src="https://github.com/user-attachments/assets/c1dbde32-b0bb-43d2-b8e6-38a63c3019f0" />
+
+<img width="752" height="558" alt="Screenshot_359" src="https://github.com/user-attachments/assets/bb1e6c18-f285-48dd-81a3-4e6d6347fa04" />
